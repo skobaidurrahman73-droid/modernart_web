@@ -15,22 +15,11 @@
   <main>
     <div id="login-box">
       <h3>ডিজাইনার তথ্য দিন</h3>
-      <input type="text" id="designer-name" placeholder="আপনার নাম">
       <input type="tel" id="designer-phone" placeholder="আপনার ফোন নম্বর">
       <button onclick="loadOrders()">অর্ডার তালিকা দেখুন</button>
     </div>
 
     <div id="orders-list"></div>
-
-    <div id="chat-box" style="display:none;">
-      <h4 id="active-customer"></h4>
-      <div id="messages"></div>
-      <div class="input-area">
-        <input type="file" id="file-input">
-        <input type="text" id="msg-input" placeholder="মেসেজ লিখুন...">
-        <button onclick="sendMessage()">পাঠান</button>
-      </div>
-    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
