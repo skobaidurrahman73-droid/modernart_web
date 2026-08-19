@@ -62,22 +62,27 @@ async function loadAllOrders() {
 }
 
 // ================= ডিজাইনার প্যানেল =================
-async function loadOrders() {
+);async function loadOrders() {
   const phone = document.getElementById('designer-phone')?.value;
   const list = document.getElementById('orders-list');
   
-  if (!phone) return alert("ফোন নম্বরটি লিখুন!");
+  if (!phone) return alert("ফোন নম্বর দিন!");
   if (!list) return;
 
-  list.innerHTML = "অর্ডার লোড হচ্ছে...";
-  const { data, error } = await _supabase.from('orders').select('*').eq('designer_phone', phone);
-
-  if (error) { list.innerHTML = "এরর: " + error.message; return; }
-  list.innerHTML = data.length === 0 ? "আপনার নম্বরে কোনো অর্ডার পাওয়া যায়নি।" : "";
+  list.innerHTML = "লোড হচ্ছে...";
   
+  const { data, error } = await _supabase.from('orders').select('*').eq('designer_phone', phone);
+  if (error) return list.innerHTML = "এরর: " + error.message;
+  
+  // লগিন বক্স হাইড করে চ্যাট প্যানেল শো করার কমান্ড
+  document.getElementById('login-box').style.display = 'none';
+  document.getElementById('chat-box').style.display = 'block';
+  
+  list.innerHTML = data.length === 0 ? "কোনো অর্ডার নেই।" : "";
   data.forEach(o => {
-    list.innerHTML += `<div style="border:1px solid #007bff; padding:10px; margin:5px;">
-      <strong>কাস্টমার:</strong> ${o.customer_name}
+    list.innerHTML += `<div class="order-card">
+      <strong>কাস্টমার:</strong> ${o.customer_name} <br>
+      <strong>রিসিট নম্বর:</strong> ${o.details}
     </div>`;
   });
 }
