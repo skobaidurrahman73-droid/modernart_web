@@ -1,52 +1,60 @@
 const _supabase = supabase.createClient("https://vicsvputuypcswsmgiuw.supabase.co", "Sb_publishable_JkHwXvnDcICOuBmSQJAN-w_pI0G3smt");
 
-// পেজ নেভিগেশন
-function goToAdmin() { window.location.href = "admin.html"; }
-function goToDesigner() { window.location.href = "designer.html"; }
-function goHome() { window.location.href = "index.html"; }
+// ================= এডমিন প্যানেল =================
+function adminLogin() {
+  document.getElementById('login-box').style.display = 'none';
+  document.getElementById('admin-dashboard').style.display = 'block';
+  loadAllOrders(); // লগিন হলেই সব অর্ডার দেখাবে
+}
 
-// কাস্টমার অর্ডার সাবমিট
-async function submitOrder() {
-  const name = document.getElementById('cust-name')?.value;
-  const phone = document.getElementById('des-phone')?.value;
-  const details = document.getElementById('order-details')?.value;
+async function createOrder() {
+  const name = document.getElementById('new-name')?.value;
+  const desPhone = document.getElementById('new-designer-phone')?.value;
   
-  if (!name || !phone) { alert("দয়া করে নাম ও ফোন নম্বর লিখুন"); return; }
-
-  const { error } = await _supabase.from('orders').insert([{ 
-    customer_name: name, 
-    designer_phone: phone,
-    details: details 
-  }]);
+  if (!name || !desPhone) return alert("কাস্টমারের নাম এবং ডিজাইনারের ফোন নম্বর দিন!");
   
-  if (error) {
-    alert("এরর: " + error.message);
-  } else {
-    document.getElementById('login-box').style.display = 'none';
-    document.getElementById('chat-box').style.display = 'block';
-    alert("অর্ডার সফল হয়েছে! এখন চ্যাট শুরু করতে পারেন।");
+  const { error } = await _supabase.from('orders').insert([{ customer_name: name, designer_phone: desPhone }]);
+  if (error) alert("এরর: " + error.message);
+  else {
+    alert("অর্ডার সফলভাবে যোগ হয়েছে!");
+    loadAllOrders();
   }
 }
 
-// ডিজাইনার অর্ডার লোড
+async function loadAllOrders() {
+  const list = document.getElementById('all-orders');
+  if (!list) return;
+  
+  list.innerHTML = "ডাটা লোড হচ্ছে...";
+  const { data, error } = await _supabase.from('orders').select('*');
+  
+  if (error) { list.innerHTML = "এরর: " + error.message; return; }
+  list.innerHTML = data.length === 0 ? "কোনো অর্ডার নেই।" : "";
+  
+  data.forEach(o => {
+    list.innerHTML += `<div style="border:1px solid #333; padding:10px; margin:5px;">
+      <strong>কাস্টমার:</strong> ${o.customer_name} | <strong>ডিজাইনার:</strong> ${o.designer_phone}
+    </div>`;
+  });
+}
+
+// ================= ডিজাইনার প্যানেল =================
 async function loadOrders() {
   const phone = document.getElementById('designer-phone')?.value;
   const list = document.getElementById('orders-list');
   
-  if (!phone) { alert("আপনার ফোন নম্বরটি লিখুন"); return; }
-  list.innerHTML = "লোড হচ্ছে...";
+  if (!phone) return alert("ফোন নম্বরটি লিখুন!");
+  if (!list) return;
 
+  list.innerHTML = "অর্ডার লোড হচ্ছে...";
   const { data, error } = await _supabase.from('orders').select('*').eq('designer_phone', phone);
+
+  if (error) { list.innerHTML = "এরর: " + error.message; return; }
+  list.innerHTML = data.length === 0 ? "আপনার নম্বরে কোনো অর্ডার পাওয়া যায়নি।" : "";
   
-  if (error) {
-    list.innerHTML = "এরর: " + error.message;
-  } else {
-    list.innerHTML = data.length === 0 ? "কোনো অর্ডার পাওয়া যায়নি।" : "";
-    data.forEach(o => {
-      list.innerHTML += `<div style="border:1px solid #ccc; padding:10px; margin:5px;">
-        <strong>কাস্টমার:</strong> ${o.customer_name}<br>
-        <strong>বিস্তারিত:</strong> ${o.details || 'নেই'}
-      </div>`;
-    });
-  }
+  data.forEach(o => {
+    list.innerHTML += `<div style="border:1px solid #007bff; padding:10px; margin:5px;">
+      <strong>কাস্টমার:</strong> ${o.customer_name}
+    </div>`;
+  });
 }
