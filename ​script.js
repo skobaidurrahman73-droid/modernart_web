@@ -1,9 +1,32 @@
 const _supabase = supabase.createClient("https://vicsvputuypcswsmgiuw.supabase.co", "Sb_publishable_JkHwXvnDcICOuBmSQJAN-w_pI0G3smt");
 
 // ================= এডমিন প্যানেল =================
-function adminLogin() {
-  document.getElementById('login-box').style.display = 'none';
-  document.getElementById('admin-dashboard').style.display = 'block';
+// এডমিন: সব ডাটা ও এক্সেস দেখা
+async function loadAllOrders() {
+  const list = document.getElementById('all-orders');
+  if (!list) return;
+  list.innerHTML = "লোড হচ্ছে...";
+  
+  const { data, error } = await _supabase.from('orders').select('*');
+  if (error) return list.innerHTML = "এরর: " + error.message;
+  
+  list.innerHTML = data.length === 0 ? "কোনো ডাটা নেই।" : "";
+  data.forEach(o => {
+    list.innerHTML += `<div class="order-card">
+      <strong>কাস্টমার:</strong> ${o.customer_name || 'নেই'} | 
+      <strong>রিসিট:</strong> ${o.details || 'নেই'} | 
+      <strong>ডিজাইনার ফোন:</strong> ${o.designer_phone || 'নেই'}
+    </div>`;
+  });
+}
+
+// এডমিন পেজ ওপেন হলে অটো লোড করার জন্য
+window.onload = function() {
+  if (document.getElementById('all-orders')) {
+    loadAllOrders();
+  }
+};
+
   loadAllOrders(); // লগিন হলেই সব অর্ডার দেখাবে
 }
 
