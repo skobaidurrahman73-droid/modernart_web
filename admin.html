@@ -12,13 +12,11 @@
     <p>জরুরি যোগাযোগ: <a href="tel:01712371058">01712371058</a></p>
   </header>
 
-  <  <main>
+  <    <main>
     <div id="admin-dashboard">
-      <h3>নতুন অর্ডার তৈরি করুন</h3>
-      <input type="text" id="cust-name" placeholder="কাস্টমারের নাম">
-<input type="tel" id="des-phone" placeholder="ডিজাইনারের ফোন নম্বর">
-<input type="text" id="receipt-no" placeholder="রিসিট নম্বর">
-<button onclick="createOrder()">অর্ডার যুক্ত করুন</button>
+      <h3>সকল একাউন্ট ও অর্ডার</h3>
+      <button onclick="loadAllOrders()" style="margin-bottom: 15px;">সব তথ্য রিফ্রেশ করুন</button>
+      <div id="all-orders"></div>
     </div>
   </main>
 
