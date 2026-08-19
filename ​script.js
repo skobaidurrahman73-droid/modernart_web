@@ -1,65 +1,59 @@
+const SUPABASE_URL = "https://vicsvputuypcswsmgiuw.supabase.co";
+const SUPABASE_ANON_KEY = "Sb_publishable_JkHwXvnDcICOuBmSQJAN-w_pI0G3smt"; 
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDu-YM6PVPXgSZ4aJEpu1tzga24Q84cx8A",
-  authDomain: "modern-art-and.firebaseapp.com",
-  projectId: "modern-art-and",
-  storageBucket: "modern-art-and.firebasestorage.app",
-  messagingSenderId: "649230411093",
-  appId: "1:649230411093:web:c26937afb866e571c8fbdc",
-  measurementId: "G-C723KKLWH3"
-};
+// এডমিন থেকে অর্ডার যোগ করার ফাংশন
+async function addOrder() {
+  const customerName = document.getElementById('cust-name')?.value;
+  const designerPhone = document.getElementById('des-phone')?.value;
+  const details = document.getElementById('order-details')?.value;
 
-// Initialize Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
-
-// ডিজাইনার প্যানেলের জন্য অর্ডার লোড করার ফাংশন
-function loadOrders() {
-  const name = document.getElementById('designer-name').value;
-  const phone = document.getElementById('designer-phone').value;
-
-  if (!name || !phone) {
-    alert("অনুগ্রহ করে নাম এবং ফোন নম্বর দিন!");
+  if (!customerName || !designerPhone) {
+    alert("কাস্টমারের নাম এবং ডিজাইনারের ফোন নম্বর দিন!");
     return;
   }
 
-  const ordersList = document.getElementById('orders-list');
-  ordersList.innerHTML = "<p>অর্ডার খোঁজা হচ্ছে...</p>";
+  const { error } = await _supabase
+    .from('orders')
+    .insert([{ customer_name: customerName, designer_phone: designerPhone, details: details }]);
 
-  db.collection("orders")
-    .where("designerPhone", "==", phone)
-    .get()
-    .then((querySnapshot) => {
-      ordersList.innerHTML = "";
-      if (querySnapshot.empty) {
-        ordersList.innerHTML = "<p>আপনার নামে কোনো অর্ডার পাওয়া যায়নি।</p>";
-        return;
-      }
-
-      querySnapshot.forEach((doc) => {
-        const order = doc.data();
-        ordersList.innerHTML += `
-          <div style="border:1px solid #ccc; padding:10px; margin:10px 0; border-radius:5px;">
-            <h4>কাস্টমার: ${order.customerName || 'অজানা'}</h4>
-            <p>বিস্তারিত: ${order.details || 'নেই'}</p>
-          </div>
-        `;
-      });
-    })
-    .catch((error) => {
-      console.error("Error loading orders: ", error);
-      ordersList.innerHTML = "<p>ডেটা লোড করতে সমস্যা হয়েছে।</p>";
-    });
+  if (error) {
+    alert("এরর: " + error.message);
+  } else {
+    alert("অর্ডার সফলভাবে যোগ হয়েছে!");
+    location.reload();
+  }
 }
 
-// মেসেজ পাঠানোর ফাংশন
-function sendMessage() {
-  const msgInput = document.getElementById('msg-input');
-  if (msgInput && msgInput.value.trim() !== "") {
-    alert("মেসেজ পাঠানো হয়েছে: " + msgInput.value);
-    msgInput.value = "";
+// ডিজাইনার প্যানেলে অর্ডার দেখার ফাংশন
+async function loadOrders() {
+  const phone = document.getElementById('designer-phone')?.value;
+  const list = document.getElementById('orders-list');
+
+  if (!phone) {
+    alert("ফোন নম্বরটি লিখুন!");
+    return;
   }
+
+  list.innerHTML = "ডাটা লোড হচ্ছে...";
+
+  const { data: orders, error } = await _supabase
+    .from('orders')
+    .select('*')
+    .eq('designer_phone', phone);
+
+  if (error) {
+    list.innerHTML = "এরর: " + error.message;
+    return;
+  }
+
+  list.innerHTML = orders.length === 0 ? "<p>আপনার নম্বরে কোনো অর্ডার পাওয়া যায়নি।</p>" : "";
+  
+  orders.forEach(order => {
+    list.innerHTML += `
+      <div style="border:1px solid #ccc; padding:10px; margin:10px 0; border-radius:5px;">
+        <p><strong>কাস্টমার:</strong> ${order.customer_name}</p>
+        <p><strong>বিস্তারিত:</strong> ${order.details || 'নেই'}</p>
+      </div>`;
+  });
 }
