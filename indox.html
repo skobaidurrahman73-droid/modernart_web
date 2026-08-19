@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>মডার্ণ আর্ট এন্ড প্রেস - কাস্টমার প্যানেল</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>মডার্ণ আর্ট এন্ড প্রেস</h1>
+    <p>জরুরি প্রয়োজনে এডমিন: <a href="tel:01712371058">01712371058</a></p>
+  </header>
+
+  <main>
+    <div id="login-box">
+      <h3>অর্ডার চ্যাটে প্রবেশ করুন</h3>
+      <input type="text" id="receipt" placeholder="রিসিট নম্বর">
+      <input type="tel" id="phone" placeholder="ফোন নম্বর">
+      <button onclick="accessChat()">চ্যাটে প্রবেশ করুন</button>
+    </div>
+
+    <div id="chat-box" style="display:none;">
+      <div id="status-bar">স্ট্যাটাস: লোড হচ্ছে...</div>
+      <div id="messages"></div>
+      <div class="input-area">
+        <input type="file" id="file-input">
+        <input type="text" id="msg-input" placeholder="মেসেজ লিখুন...">
+        <button onclick="sendMessage()">পাঠান</button>
+      </div>
+      <button onclick="approveDesign()" class="btn-approve">Design Approve</button>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
